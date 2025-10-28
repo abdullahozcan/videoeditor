@@ -5,7 +5,15 @@ const os = require('os');
 const axios = require('axios');
 const FormData = require('form-data');
 const { spawn } = require('child_process');
-const ffmpegPath = require('ffmpeg-static');
+let ffmpegPath = require('ffmpeg-static');
+
+// Fix ffmpeg path for ASAR packed apps (AppImage, etc.)
+if (ffmpegPath.includes('app.asar')) {
+  ffmpegPath = ffmpegPath.replace('app.asar', 'app.asar.unpacked');
+}
+
+console.log('FFmpeg path:', ffmpegPath);
+console.log('FFmpeg exists:', fs.existsSync(ffmpegPath));
 
 let mainWindow;
 
@@ -288,7 +296,12 @@ function hexToAssColor(hex) {
 
 // Trim video (cut from start to end time)
 ipcMain.handle('trim-video', async (event, videoPath, startTime, endTime, splits = [], audioVolume = 100, aspectRatio = 'original', videoEffects = {}) => {
-  if (!fs.existsSync(videoPath)) throw new Error('Video file not found');
+  console.log('[trim-video] Request received:', { videoPath, startTime, endTime, splits: splits.length, videoEffects });
+  
+  if (!fs.existsSync(videoPath)) {
+    console.error('[trim-video] Video file not found:', videoPath);
+    throw new Error('Video file not found');
+  }
 
   const dir = path.dirname(videoPath);
   const base = path.basename(videoPath, path.extname(videoPath));

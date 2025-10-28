@@ -40,6 +40,9 @@
       "src/**/*",
       "package.json"
     ],
+    "asarUnpack": [
+      "node_modules/ffmpeg-static/**/*"
+    ],
     "directories": {
       "buildResources": "assets",
       "output": "dist"
@@ -47,9 +50,8 @@
     "publish": null,
     "linux": {
       "target": [
-        "AppImage",
-        "deb",
-        "rpm"
+        "dir",
+        "tar.gz"
       ],
       "category": "AudioVideo",
       "executableName": "ai-subtitler"
