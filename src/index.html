@@ -472,6 +472,58 @@
         display: inline-block;
         margin-top: 15px;
         max-width: 100%;
+        transition: all 0.3s ease;
+      }
+
+      /* Sticky video player */
+      .video-container.sticky {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 320px;
+        max-width: 320px;
+        z-index: 1000;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .video-container.sticky video {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+      }
+
+      .video-container.sticky .aspect-overlay {
+        display: none !important;
+      }
+
+      .sticky-close {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1001;
+        font-size: 16px;
+        transition: all 0.2s;
+      }
+
+      .video-container.sticky .sticky-close {
+        display: flex;
+      }
+
+      .sticky-close:hover {
+        background: rgba(255, 0, 0, 0.8);
+        transform: scale(1.1);
       }
 
       .aspect-overlay {
@@ -563,6 +615,244 @@
         border-right: 4px solid transparent;
         border-top: 8px solid #ff4444;
       }
+
+      /* Timeline thumbnail preview */
+      .timeline-thumbnail {
+        position: fixed;
+        display: none;
+        pointer-events: none;
+        z-index: 1000;
+        border: 2px solid #667eea;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        background: #1a1a1a;
+        overflow: hidden;
+      }
+
+      .timeline-thumbnail.active {
+        display: block;
+      }
+
+      .thumbnail-canvas {
+        display: block;
+        width: 160px;
+        height: 90px;
+        background: #000;
+      }
+
+      .thumbnail-time {
+        padding: 6px 10px;
+        background: rgba(0, 0, 0, 0.9);
+        color: #fff;
+        text-align: center;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      /* Batch Queue Styles */
+      .queue-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        margin-bottom: 8px;
+        background: white;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        transition: all 0.3s;
+      }
+
+      .queue-item.processing {
+        border-color: #667eea;
+        background: #f0f4ff;
+      }
+
+      .queue-item.completed {
+        border-color: #4caf50;
+        background: #f1f8f4;
+      }
+
+      .queue-item.error {
+        border-color: #f44336;
+        background: #fff5f5;
+      }
+
+      .queue-item-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .queue-item-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+      }
+
+      .queue-item-status {
+        font-size: 12px;
+        color: #666;
+        font-style: italic;
+      }
+
+      .queue-item-remove {
+        padding: 6px 12px;
+        background: #f44336;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background 0.3s;
+      }
+
+      .queue-item-remove:hover {
+        background: #d32f2f;
+      }
+
+      .queue-item-progress {
+        width: 100%;
+        height: 4px;
+        background: #e0e0e0;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 4px;
+      }
+
+      .queue-item-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        transition: width 0.3s;
+      }
+
+      /* Advanced Subtitle Editor Styles */
+      .subtitle-item {
+        background: white;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 12px;
+        transition: all 0.3s;
+      }
+
+      .subtitle-item:hover {
+        border-color: #667eea;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+      }
+
+      .subtitle-item.active {
+        border-color: #667eea;
+        background: #f0f4ff;
+      }
+
+      .subtitle-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .subtitle-index {
+        font-weight: 700;
+        color: #667eea;
+        font-size: 16px;
+      }
+
+      .subtitle-actions {
+        display: flex;
+        gap: 6px;
+      }
+
+      .subtitle-time-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .time-input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .time-input-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #666;
+      }
+
+      .time-input-wrapper {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+      }
+
+      .time-input {
+        flex: 1;
+        padding: 6px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+      }
+
+      .time-adjust-btn {
+        padding: 4px 8px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s;
+      }
+
+      .time-adjust-btn:hover {
+        background: #f0f0f0;
+        border-color: #667eea;
+      }
+
+      .subtitle-text-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: inherit;
+        resize: vertical;
+        min-height: 60px;
+      }
+
+      .subtitle-text-input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .icon-btn {
+        padding: 6px 10px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 4px;
+        transition: all 0.2s;
+      }
+
+      .icon-btn:hover {
+        background: #f0f0f0;
+      }
+
+      .icon-btn.delete:hover {
+        background: #ffebee;
+        color: #f44336;
+      }
+
+      .icon-btn.play:hover {
+        background: #e3f2fd;
+        color: #2196f3;
+      }
     </style>
   </head>
   <body>
@@ -573,12 +863,43 @@
       <!-- Video Selection -->
       <div class="section">
         <h3>1. Select Video</h3>
+        
+        <!-- Batch Mode Toggle -->
+        <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="batchModeToggle" style="width: 18px; height: 18px; cursor: pointer;">
+            <span style="font-weight: 600; color: #333;">📚 Batch Mode (Process Multiple Videos)</span>
+          </label>
+        </div>
+
         <button id="selectBtn">📁 Select Video File</button>
+        <button id="selectMultipleBtn" class="secondary hidden">📂 Select Multiple Videos</button>
+        
+        <!-- Single Video Info -->
         <div id="fileInfo" class="file-info hidden">
           <span>📹</span>
           <span class="file-path" id="videoPath">No file selected</span>
         </div>
-        <div class="video-container">
+        
+        <!-- Batch Queue List -->
+        <div id="batchQueue" class="hidden" style="margin-top: 15px;">
+          <h4 style="margin-bottom: 10px;">📋 Video Queue (<span id="queueCount">0</span> files)</h4>
+          <div id="queueList" style="
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+          "></div>
+          <div style="margin-top: 10px; display: flex; gap: 10px;">
+            <button id="clearQueueBtn" class="secondary">🗑️ Clear Queue</button>
+            <button id="processBatchBtn" class="success" disabled>⚡ Process All Videos</button>
+          </div>
+        </div>
+        
+        <div class="video-container" id="videoContainer">
+          <button class="sticky-close" id="stickyCloseBtn" title="Exit sticky mode">✕</button>
           <video id="preview" controls class="hidden"></video>
           <div id="aspectOverlay" class="aspect-overlay">
             <div id="aspectFrame" class="aspect-frame"></div>
@@ -684,6 +1005,132 @@
               </button>
             </div>
           </div>
+
+          <!-- Video Filters -->
+          <div class="setting-group">
+            <h4>🎨 Video Filters</h4>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div>
+                <label for="brightnessSlider" style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                  <span>☀️ Brightness:</span>
+                  <span id="brightnessValue">0</span>
+                </label>
+                <input type="range" id="brightnessSlider" min="-0.3" max="0.3" step="0.01" value="0" 
+                  style="width: 100%;">
+              </div>
+              <div>
+                <label for="contrastSlider" style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                  <span>◐ Contrast:</span>
+                  <span id="contrastValue">1.0</span>
+                </label>
+                <input type="range" id="contrastSlider" min="0.5" max="2.0" step="0.05" value="1.0" 
+                  style="width: 100%;">
+              </div>
+              <div>
+                <label for="saturationSlider" style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                  <span>🌈 Saturation:</span>
+                  <span id="saturationValue">1.0</span>
+                </label>
+                <input type="range" id="saturationSlider" min="0" max="2.0" step="0.05" value="1.0" 
+                  style="width: 100%;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Speed Control -->
+          <div class="setting-group">
+            <h4>⚡ Speed Control</h4>
+            <div>
+              <label for="speedSlider" style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span>Speed:</span>
+                <span id="speedValue">1.0x</span>
+              </label>
+              <input type="range" id="speedSlider" min="0.25" max="4.0" step="0.05" value="1.0" 
+                style="width: 100%;">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: #666; margin-top: 2px;">
+                <span>0.25x (Slow)</span>
+                <span>1x (Normal)</span>
+                <span>4x (Fast)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rotation and Flip -->
+          <div class="setting-group">
+            <h4>🔄 Rotation & Flip</h4>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+              <button class="aspect-btn" id="rotate90Btn" style="padding: 8px;">
+                <span>↻ 90°</span>
+              </button>
+              <button class="aspect-btn" id="rotate180Btn" style="padding: 8px;">
+                <span>↻ 180°</span>
+              </button>
+              <button class="aspect-btn" id="rotate270Btn" style="padding: 8px;">
+                <span>↻ 270°</span>
+              </button>
+              <button class="aspect-btn" id="resetRotationBtn" style="padding: 8px;">
+                <span>↺ Reset</span>
+              </button>
+              <button class="aspect-btn" id="flipHorizontalBtn" style="padding: 8px;">
+                <span>↔️ Flip H</span>
+              </button>
+              <button class="aspect-btn" id="flipVerticalBtn" style="padding: 8px;">
+                <span>↕️ Flip V</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Audio Fade Effects -->
+          <div class="setting-group">
+            <h4>🎵 Audio Fade Effects</h4>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div>
+                <label for="fadeInDuration" style="display: block; margin-bottom: 4px;">
+                  <span>📈 Fade In (seconds):</span>
+                </label>
+                <input type="number" id="fadeInDuration" min="0" max="10" step="0.5" value="0" 
+                  style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 4px;">
+              </div>
+              <div>
+                <label for="fadeOutDuration" style="display: block; margin-bottom: 4px;">
+                  <span>📉 Fade Out (seconds):</span>
+                </label>
+                <input type="number" id="fadeOutDuration" min="0" max="10" step="0.5" value="0" 
+                  style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 4px;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Transitions (for split segments) -->
+          <div class="setting-group" id="transitionSettings" style="display: none;">
+            <h4>✨ Transitions (Between Segments)</h4>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div>
+                <label for="transitionType" style="display: block; margin-bottom: 4px;">
+                  <span>Transition Type:</span>
+                </label>
+                <select id="transitionType" style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 4px;">
+                  <option value="none">None</option>
+                  <option value="fade">Fade</option>
+                  <option value="fadeblack">Fade to Black</option>
+                  <option value="fadewhite">Fade to White</option>
+                  <option value="wipeleft">Wipe Left</option>
+                  <option value="wiperight">Wipe Right</option>
+                  <option value="wipeup">Wipe Up</option>
+                  <option value="wipedown">Wipe Down</option>
+                  <option value="slideleft">Slide Left</option>
+                  <option value="slideright">Slide Right</option>
+                </select>
+              </div>
+              <div>
+                <label for="transitionDuration" style="display: block; margin-bottom: 4px;">
+                  <span>Duration (seconds):</span>
+                </label>
+                <input type="number" id="transitionDuration" min="0.1" max="3" step="0.1" value="0.5" 
+                  style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 4px;">
+              </div>
+            </div>
+          </div>
         </div>
 
         <div style="margin-top: 15px;">
@@ -694,6 +1141,53 @@
       <!-- Subtitle Generation -->
       <div class="section">
         <h3><span id="subtitleStepNumber">2</span>. Generate Subtitles</h3>
+        
+        <div style="margin-bottom: 15px;">
+          <label for="languageSelect" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+            🌍 Transcription Language:
+          </label>
+          <select id="languageSelect" style="
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+          ">
+            <option value="auto">🔄 Auto-detect</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="tr">🇹🇷 Turkish (Türkçe)</option>
+            <option value="es">🇪🇸 Spanish (Español)</option>
+            <option value="fr">🇫🇷 French (Français)</option>
+            <option value="de">🇩🇪 German (Deutsch)</option>
+            <option value="it">🇮🇹 Italian (Italiano)</option>
+            <option value="pt">🇵🇹 Portuguese (Português)</option>
+            <option value="ru">🇷🇺 Russian (Русский)</option>
+            <option value="ja">🇯🇵 Japanese (日本語)</option>
+            <option value="ko">🇰🇷 Korean (한국어)</option>
+            <option value="zh">🇨🇳 Chinese (中文)</option>
+            <option value="ar">🇸🇦 Arabic (العربية)</option>
+            <option value="hi">🇮🇳 Hindi (हिन्दी)</option>
+            <option value="nl">🇳🇱 Dutch (Nederlands)</option>
+            <option value="pl">🇵🇱 Polish (Polski)</option>
+            <option value="sv">🇸🇪 Swedish (Svenska)</option>
+            <option value="da">🇩🇰 Danish (Dansk)</option>
+            <option value="no">🇳🇴 Norwegian (Norsk)</option>
+            <option value="fi">🇫🇮 Finnish (Suomi)</option>
+            <option value="cs">🇨🇿 Czech (Čeština)</option>
+            <option value="uk">🇺🇦 Ukrainian (Українська)</option>
+            <option value="ro">🇷🇴 Romanian (Română)</option>
+            <option value="el">🇬🇷 Greek (Ελληνικά)</option>
+            <option value="hu">🇭🇺 Hungarian (Magyar)</option>
+            <option value="id">🇮🇩 Indonesian (Bahasa Indonesia)</option>
+            <option value="vi">🇻🇳 Vietnamese (Tiếng Việt)</option>
+            <option value="th">🇹🇭 Thai (ไทย)</option>
+            <option value="ms">🇲🇾 Malay (Bahasa Melayu)</option>
+          </select>
+        </div>
+        
         <button id="genBtn" disabled>✨ Generate Subtitles (AI)</button>
         
         <div id="uploadProgress" class="progress-container">
@@ -703,13 +1197,284 @@
           <div id="transcriptionStatus" class="status-text"></div>
         </div>
 
-        <h3 style="margin-top: 20px;">Generated SRT</h3>
-        <textarea id="srtBox" placeholder="SRT subtitles will appear here after generation..." readonly></textarea>
+        <h3 style="margin-top: 20px;">📝 Subtitles</h3>
         
-        <div id="editControls" class="edit-controls">
-          <button id="editBtn" class="secondary">✏️ Edit SRT</button>
-          <button id="saveBtn" class="success hidden">💾 Save Changes</button>
-          <button id="cancelBtn" class="secondary hidden">❌ Cancel</button>
+        <!-- View Mode Toggle -->
+        <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+          <button id="simpleViewBtn" class="secondary active">📄 Simple View</button>
+          <button id="advancedViewBtn" class="secondary">⚙️ Advanced Editor</button>
+        </div>
+        
+        <!-- Simple SRT Text View -->
+        <div id="simpleView">
+          <textarea id="srtBox" placeholder="SRT subtitles will appear here after generation..." readonly></textarea>
+          
+          <div id="editControls" class="edit-controls">
+            <button id="editBtn" class="secondary">✏️ Edit SRT</button>
+            <button id="saveBtn" class="success hidden">💾 Save Changes</button>
+            <button id="cancelBtn" class="secondary hidden">❌ Cancel</button>
+          </div>
+        </div>
+        
+        <!-- Advanced Subtitle Editor -->
+        <div id="advancedView" class="hidden">
+          <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <button id="addSubtitleBtn" class="secondary">➕ Add Subtitle</button>
+            <button id="shiftAllBtn" class="secondary">⏰ Shift All Timing</button>
+            <button id="autoSyncBtn" class="secondary">🎯 Auto-Sync</button>
+            <button id="aiEnhanceBtn" class="secondary">✨ AI Enhance</button>
+            <span style="color: #666; font-size: 14px;">Total: <span id="subtitleCount">0</span> subtitles</span>
+          </div>
+          
+          <!-- Auto-Sync Panel -->
+          <div id="autoSyncPanel" class="hidden" style="
+            margin-bottom: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #2196F3 0%, #00BCD4 100%);
+            border-radius: 8px;
+            color: white;
+          ">
+            <h4 style="margin: 0 0 15px 0;">🎯 Auto-Sync Subtitle Timing</h4>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+              <div>
+                <label style="display: block; margin-bottom: 8px; font-size: 13px;">📍 Sync Method:</label>
+                <select id="syncMethod" style="width: 100%; padding: 8px; border-radius: 4px; border: none;">
+                  <option value="offset">⏰ Simple Offset (Shift All)</option>
+                  <option value="stretch">📏 Stretch/Compress Timing</option>
+                  <option value="two-point">🎯 Two-Point Sync</option>
+                </select>
+              </div>
+              
+              <div id="offsetOptions">
+                <label style="display: block; margin-bottom: 8px; font-size: 13px;">⏱️ Time Offset (seconds):</label>
+                <input type="number" id="timeOffset" step="0.1" value="0" style="
+                  width: 100%;
+                  padding: 8px;
+                  border-radius: 4px;
+                  border: none;
+                  font-size: 14px;
+                " placeholder="e.g., 2.5 or -1.5">
+              </div>
+              
+              <div id="stretchOptions" class="hidden">
+                <label style="display: block; margin-bottom: 8px; font-size: 13px;">📊 Speed Factor:</label>
+                <input type="number" id="speedFactor" step="0.01" value="1.0" min="0.5" max="2.0" style="
+                  width: 100%;
+                  padding: 8px;
+                  border-radius: 4px;
+                  border: none;
+                  font-size: 14px;
+                " placeholder="1.0 = normal, >1 = faster, <1 = slower">
+              </div>
+              
+              <div id="twoPointOptions" class="hidden" style="grid-column: 1 / -1;">
+                <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 6px; margin-bottom: 10px;">
+                  <p style="margin: 0 0 10px 0; font-size: 13px;">📌 Set two sync points:</p>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                      <label style="display: block; margin-bottom: 5px; font-size: 12px;">Point 1 - Subtitle #:</label>
+                      <input type="number" id="syncPoint1Index" min="1" value="1" style="width: 100%; padding: 6px; border-radius: 4px; border: none;">
+                    </div>
+                    <div>
+                      <label style="display: block; margin-bottom: 5px; font-size: 12px;">Should start at (sec):</label>
+                      <input type="number" id="syncPoint1Time" step="0.1" value="0" style="width: 100%; padding: 6px; border-radius: 4px; border: none;">
+                    </div>
+                    <div>
+                      <label style="display: block; margin-bottom: 5px; font-size: 12px;">Point 2 - Subtitle #:</label>
+                      <input type="number" id="syncPoint2Index" min="1" value="10" style="width: 100%; padding: 6px; border-radius: 4px; border: none;">
+                    </div>
+                    <div>
+                      <label style="display: block; margin-bottom: 5px; font-size: 12px;">Should start at (sec):</label>
+                      <input type="number" id="syncPoint2Time" step="0.1" value="30" style="width: 100%; padding: 6px; border-radius: 4px; border: none;">
+                    </div>
+                  </div>
+                  <small style="display: block; margin-top: 8px; opacity: 0.9; font-size: 11px;">
+                    💡 Tip: Play video to find exact times where subtitles should appear
+                  </small>
+                </div>
+              </div>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+              <p style="margin: 0; font-size: 12px; opacity: 0.95;">
+                ℹ️ <strong>Info:</strong> This will adjust all subtitle timings. You can undo by clicking "Reset" or reloading subtitles.
+              </p>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+              <button id="applyAutoSyncBtn" class="success" style="flex: 1;">🎯 Apply Sync</button>
+              <button id="closeAutoSyncBtn" class="secondary">❌ Close</button>
+            </div>
+          </div>
+          
+          <!-- AI Enhancement Panel -->
+          <div id="aiPanel" class="hidden" style="
+            margin-bottom: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            color: white;
+          ">
+            <h4 style="margin: 0 0 15px 0;">🤖 AI Subtitle Enhancement</h4>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+              <div>
+                <label style="display: block; margin-bottom: 5px; font-size: 13px;">🔑 API Provider:</label>
+                <select id="aiProvider" style="width: 100%; padding: 8px; border-radius: 4px; border: none;">
+                  <option value="gemini">Google Gemini</option>
+                  <option value="deepseek">DeepSeek</option>
+                </select>
+              </div>
+              
+              <div>
+                <label style="display: block; margin-bottom: 5px; font-size: 13px;">🎯 Operation:</label>
+                <select id="aiOperation" style="width: 100%; padding: 8px; border-radius: 4px; border: none;">
+                  <option value="improve">✨ Improve Grammar & Style</option>
+                  <option value="translate">🌍 Translate to...</option>
+                  <option value="summarize">📝 Summarize (Shorter)</option>
+                  <option value="formal">👔 Make More Formal</option>
+                  <option value="casual">😊 Make More Casual</option>
+                  <option value="punctuation">📌 Fix Punctuation</option>
+                </select>
+              </div>
+            </div>
+            
+            <div id="translateOptions" class="hidden" style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; font-size: 13px;">🌐 Target Language:</label>
+              <select id="targetLanguage" style="width: 100%; padding: 8px; border-radius: 4px; border: none;">
+                <option value="en">English</option>
+                <option value="tr">Turkish (Türkçe)</option>
+                <option value="es">Spanish (Español)</option>
+                <option value="fr">French (Français)</option>
+                <option value="de">German (Deutsch)</option>
+                <option value="ja">Japanese (日本語)</option>
+                <option value="ko">Korean (한국어)</option>
+                <option value="zh">Chinese (中文)</option>
+                <option value="ar">Arabic (العربية)</option>
+                <option value="ru">Russian (Русский)</option>
+              </select>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; font-size: 13px;">🔐 API Key:</label>
+              <input type="password" id="aiApiKey" placeholder="Enter your API key..." style="
+                width: 100%;
+                padding: 8px;
+                border-radius: 4px;
+                border: none;
+                font-family: monospace;
+              ">
+              <small style="opacity: 0.9; font-size: 11px;">Your API key is stored locally and never sent to our servers</small>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+              <button id="processAiBtn" class="success" style="flex: 1;">🚀 Process with AI</button>
+              <button id="closeAiBtn" class="secondary">❌ Close</button>
+            </div>
+            
+            <div id="aiProgress" class="hidden" style="margin-top: 15px;">
+              <div style="background: rgba(255,255,255,0.2); height: 6px; border-radius: 3px; overflow: hidden;">
+                <div id="aiProgressBar" style="background: white; height: 100%; width: 0%; transition: width 0.3s;"></div>
+              </div>
+              <p id="aiStatus" style="margin: 8px 0 0 0; font-size: 13px; text-align: center;"></p>
+            </div>
+          </div>
+          
+          <div id="subtitleList" style="
+            max-height: 500px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+          ">
+            <p style="text-align: center; color: #999;">No subtitles yet</p>
+          </div>
+        </div>
+
+        <!-- Subtitle Styling Options -->
+        <h3 style="margin-top: 25px;">🎨 Subtitle Styling (Optional)</h3>
+        <div id="stylingControls" style="
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
+          padding: 15px;
+          background: #f8f9fa;
+          border-radius: 8px;
+          margin-bottom: 15px;
+        ">
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+              🔤 Font Family:
+            </label>
+            <select id="fontFamily" style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 6px; background: white;">
+              <option value="Arial">Arial</option>
+              <option value="Helvetica">Helvetica</option>
+              <option value="Times New Roman">Times New Roman</option>
+              <option value="Courier New">Courier New</option>
+              <option value="Verdana">Verdana</option>
+              <option value="Georgia">Georgia</option>
+              <option value="Comic Sans MS">Comic Sans MS</option>
+              <option value="Impact">Impact</option>
+              <option value="Trebuchet MS">Trebuchet MS</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+              📏 Font Size:
+            </label>
+            <select id="fontSize" style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 6px; background: white;">
+              <option value="16">Small (16pt)</option>
+              <option value="20">Medium (20pt)</option>
+              <option value="24" selected>Default (24pt)</option>
+              <option value="28">Large (28pt)</option>
+              <option value="32">Extra Large (32pt)</option>
+              <option value="40">Huge (40pt)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+              🎨 Text Color:
+            </label>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <input type="color" id="textColor" value="#ffffff" style="width: 50px; height: 38px; border: 2px solid #ddd; border-radius: 6px; cursor: pointer;">
+              <span id="textColorValue" style="font-family: monospace; font-size: 14px;">#FFFFFF</span>
+            </div>
+          </div>
+
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+              🖼️ Outline Color:
+            </label>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <input type="color" id="outlineColor" value="#000000" style="width: 50px; height: 38px; border: 2px solid #ddd; border-radius: 6px; cursor: pointer;">
+              <span id="outlineColorValue" style="font-family: monospace; font-size: 14px;">#000000</span>
+            </div>
+          </div>
+
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+              📍 Position:
+            </label>
+            <select id="subtitlePosition" style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 6px; background: white;">
+              <option value="bottom">Bottom (Default)</option>
+              <option value="top">Top</option>
+              <option value="middle">Middle</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+              💪 Font Weight:
+            </label>
+            <select id="fontWeight" style="width: 100%; padding: 8px; border: 2px solid #ddd; border-radius: 6px; background: white;">
+              <option value="normal">Normal</option>
+              <option value="bold" selected>Bold</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -728,6 +1493,12 @@
           <div id="burnStatus" class="status-text"></div>
         </div>
       </div>
+    </div>
+
+    <!-- Timeline Thumbnail Preview -->
+    <div id="timelineThumbnail" class="timeline-thumbnail">
+      <canvas id="thumbnailCanvas" class="thumbnail-canvas" width="160" height="90"></canvas>
+      <div id="thumbnailTime" class="thumbnail-time">00:00</div>
     </div>
 
     <script src="renderer.js"></script>

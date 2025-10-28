@@ -47,8 +47,20 @@ ipcMain.handle('select-video', async () => {
   return res.filePaths[0];
 });
 
+// Select multiple video files
+ipcMain.handle('select-multiple-videos', async () => {
+  const res = await dialog.showOpenDialog({
+    properties: ['openFile', 'multiSelections'],
+    filters: [
+      { name: 'Videos', extensions: ['mp4', 'mov', 'mkv', 'webm', 'avi'] }
+    ]
+  });
+  if (res.canceled) return null;
+  return res.filePaths;
+});
+
 // Generate subtitles using OpenAI Whisper API
-ipcMain.handle('generate-subtitles', async (event, videoPath) => {
+ipcMain.handle('generate-subtitles', async (event, videoPath, language = 'auto') => {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY environment variable is not set.');
   }
@@ -61,6 +73,11 @@ ipcMain.handle('generate-subtitles', async (event, videoPath) => {
   form.append('file', fileStream);
   form.append('model', 'whisper-1');
   form.append('response_format', 'srt');
+  
+  // Add language parameter if not auto-detect
+  if (language && language !== 'auto') {
+    form.append('language', language);
+  }
 
   try {
     const headers = Object.assign(
@@ -125,7 +142,7 @@ ipcMain.handle('export-srt', async (event, videoPath, srtContent) => {
 });
 
 // Burn subtitles into video
-ipcMain.handle('burn-subtitles', async (event, videoPath, srtPath) => {
+ipcMain.handle('burn-subtitles', async (event, videoPath, srtPath, subtitleStyle = {}) => {
   if (!fs.existsSync(videoPath)) throw new Error('Video file not found');
   if (!fs.existsSync(srtPath)) throw new Error('SRT file not found');
 
@@ -133,12 +150,15 @@ ipcMain.handle('burn-subtitles', async (event, videoPath, srtPath) => {
   const base = path.basename(videoPath, path.extname(videoPath));
   const outPath = path.join(dir, `${base}-with-subs.mp4`);
 
+  // Convert SRT to ASS with custom styling
+  const assPath = await convertSrtToAss(srtPath, subtitleStyle);
+
   // Escape path for ffmpeg subtitle filter (Windows compatibility)
-  const escapedSrtPath = srtPath.replace(/\\/g, '/').replace(/:/g, '\\:');
+  const escapedAssPath = assPath.replace(/\\/g, '/').replace(/:/g, '\\:');
   const args = [
     '-y',
     '-i', videoPath,
-    '-vf', `subtitles=${escapedSrtPath}`,
+    '-vf', `ass=${escapedAssPath}`,
     '-c:a', 'copy',
     outPath
   ];
@@ -166,6 +186,13 @@ ipcMain.handle('burn-subtitles', async (event, videoPath, srtPath) => {
     });
 
     ff.on('close', (code) => {
+      // Clean up temporary ASS file
+      try {
+        if (fs.existsSync(assPath)) fs.unlinkSync(assPath);
+      } catch (e) {
+        console.error('Failed to delete temp ASS file:', e);
+      }
+      
       if (code === 0) {
         mainWindow.webContents.send('burn-status', 'Encoding complete!');
         resolve({ outPath });
@@ -177,8 +204,90 @@ ipcMain.handle('burn-subtitles', async (event, videoPath, srtPath) => {
   });
 });
 
+// Convert SRT to ASS with custom styling
+async function convertSrtToAss(srtPath, style = {}) {
+  const srtContent = fs.readFileSync(srtPath, 'utf8');
+  const assPath = srtPath.replace(/\.srt$/i, '.ass');
+  
+  // Default styling
+  const fontFamily = style.fontFamily || 'Arial';
+  const fontSize = style.fontSize || 24;
+  const textColor = hexToAssColor(style.textColor || '#FFFFFF');
+  const outlineColor = hexToAssColor(style.outlineColor || '#000000');
+  const position = style.position || 'bottom';
+  const fontWeight = style.fontWeight || 'bold';
+  
+  // ASS alignment codes: 1=left-bottom, 2=center-bottom, 3=right-bottom
+  //                      5=center-middle, 8=center-top
+  const alignmentMap = {
+    'bottom': 2,
+    'middle': 5,
+    'top': 8
+  };
+  const alignment = alignmentMap[position] || 2;
+  
+  // Font weight
+  const isBold = fontWeight === 'bold' ? -1 : 0;
+  
+  // ASS header
+  let assContent = `[Script Info]
+Title: Subtitle
+ScriptType: v4.00+
+WrapStyle: 0
+PlayResX: 1920
+PlayResY: 1080
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,${fontFamily},${fontSize},${textColor},&H000000FF,${outlineColor},&H00000000,${isBold},0,0,0,100,100,0,0,1,2,1,${alignment},10,10,10,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+`;
+
+  // Parse SRT and convert to ASS events
+  const srtBlocks = srtContent.trim().split(/\n\n+/);
+  
+  for (const block of srtBlocks) {
+    const lines = block.trim().split('\n');
+    if (lines.length < 3) continue;
+    
+    // Parse SRT timestamp (00:00:01,000 --> 00:00:03,000)
+    const timeMatch = lines[1].match(/(\d{2}):(\d{2}):(\d{2}),(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2}),(\d{3})/);
+    if (!timeMatch) continue;
+    
+    const startTime = `${timeMatch[1]}:${timeMatch[2]}:${timeMatch[3]}.${timeMatch[4].substring(0, 2)}`;
+    const endTime = `${timeMatch[5]}:${timeMatch[6]}:${timeMatch[7]}.${timeMatch[8].substring(0, 2)}`;
+    
+    // Get subtitle text (everything after timestamp)
+    const text = lines.slice(2).join('\\N'); // \N is newline in ASS
+    
+    assContent += `Dialogue: 0,${startTime},${endTime},Default,,0,0,0,,${text}\n`;
+  }
+  
+  fs.writeFileSync(assPath, assContent, 'utf8');
+  return assPath;
+}
+
+// Convert hex color to ASS color format (&HAABBGGRR)
+function hexToAssColor(hex) {
+  // Remove # if present
+  hex = hex.replace('#', '');
+  
+  // Parse RGB
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  
+  // ASS format is &HAABBGGRR (alpha is always 00 for opaque)
+  const assColor = `&H00${b.toString(16).padStart(2, '0').toUpperCase()}${g.toString(16).padStart(2, '0').toUpperCase()}${r.toString(16).padStart(2, '0').toUpperCase()}`;
+  
+  return assColor;
+}
+
 // Trim video (cut from start to end time)
-ipcMain.handle('trim-video', async (event, videoPath, startTime, endTime, splits = [], audioVolume = 100, aspectRatio = 'original') => {
+ipcMain.handle('trim-video', async (event, videoPath, startTime, endTime, splits = [], audioVolume = 100, aspectRatio = 'original', videoEffects = {}) => {
   if (!fs.existsSync(videoPath)) throw new Error('Video file not found');
 
   const dir = path.dirname(videoPath);
@@ -186,16 +295,83 @@ ipcMain.handle('trim-video', async (event, videoPath, startTime, endTime, splits
   const ext = path.extname(videoPath);
   
   // Build filter complex for audio and video
-  const filters = [];
+  const audioFilters = [];
+  const videoFilters = [];
   
   // Audio volume filter
   if (audioVolume !== 100) {
     const volumeMultiplier = audioVolume / 100;
-    filters.push(`volume=${volumeMultiplier}`);
+    audioFilters.push(`volume=${volumeMultiplier}`);
   }
   
-  // Video aspect ratio filter
-  let videoFilter = null;
+  // Audio fade effects
+  if (videoEffects.fadeIn && videoEffects.fadeIn > 0) {
+    audioFilters.push(`afade=t=in:st=${startTime}:d=${videoEffects.fadeIn}`);
+  }
+  if (videoEffects.fadeOut && videoEffects.fadeOut > 0) {
+    const fadeOutStart = endTime - videoEffects.fadeOut;
+    audioFilters.push(`afade=t=out:st=${fadeOutStart}:d=${videoEffects.fadeOut}`);
+  }
+  
+  // Audio speed adjustment (atempo for audio)
+  if (videoEffects.speed && videoEffects.speed !== 1.0) {
+    let speed = videoEffects.speed;
+    // atempo has limits of 0.5-2.0, so chain multiple for extreme speeds
+    while (speed > 2.0) {
+      audioFilters.push('atempo=2.0');
+      speed /= 2.0;
+    }
+    while (speed < 0.5) {
+      audioFilters.push('atempo=0.5');
+      speed /= 0.5;
+    }
+    if (speed !== 1.0) {
+      audioFilters.push(`atempo=${speed}`);
+    }
+  }
+  
+  // Video filters
+  // Brightness, contrast, saturation (eq filter)
+  const eqParams = [];
+  if (videoEffects.brightness && videoEffects.brightness !== 0) {
+    eqParams.push(`brightness=${videoEffects.brightness}`);
+  }
+  if (videoEffects.contrast && videoEffects.contrast !== 1.0) {
+    eqParams.push(`contrast=${videoEffects.contrast}`);
+  }
+  if (videoEffects.saturation && videoEffects.saturation !== 1.0) {
+    eqParams.push(`saturation=${videoEffects.saturation}`);
+  }
+  if (eqParams.length > 0) {
+    videoFilters.push(`eq=${eqParams.join(':')}`);
+  }
+  
+  // Speed control (setpts for video)
+  if (videoEffects.speed && videoEffects.speed !== 1.0) {
+    const ptsMultiplier = 1.0 / videoEffects.speed;
+    videoFilters.push(`setpts=${ptsMultiplier}*PTS`);
+  }
+  
+  // Rotation and flip
+  if (videoEffects.rotation && videoEffects.rotation !== 0) {
+    // transpose filter: 1=90°CW, 2=90°CCW, 3=180°
+    if (videoEffects.rotation === 90) {
+      videoFilters.push('transpose=1');
+    } else if (videoEffects.rotation === 180) {
+      videoFilters.push('transpose=1,transpose=1');
+    } else if (videoEffects.rotation === 270) {
+      videoFilters.push('transpose=2');
+    }
+  }
+  
+  if (videoEffects.flipH) {
+    videoFilters.push('hflip');
+  }
+  if (videoEffects.flipV) {
+    videoFilters.push('vflip');
+  }
+  
+  // Video aspect ratio filter (apply after other filters)
   if (aspectRatio !== 'original') {
     const ratioMap = {
       '9:16': { width: 1080, height: 1920 },   // Phone portrait
@@ -208,9 +384,13 @@ ipcMain.handle('trim-video', async (event, videoPath, startTime, endTime, splits
     const target = ratioMap[aspectRatio];
     if (target) {
       // Scale and pad to maintain aspect ratio without stretching
-      videoFilter = `scale=${target.width}:${target.height}:force_original_aspect_ratio=decrease,pad=${target.width}:${target.height}:(ow-iw)/2:(oh-ih)/2:black`;
+      videoFilters.push(`scale=${target.width}:${target.height}:force_original_aspect_ratio=decrease,pad=${target.width}:${target.height}:(ow-iw)/2:(oh-ih)/2:black`);
     }
   }
+  
+  // Build final filter strings
+  const filters = audioFilters;
+  const videoFilter = videoFilters.length > 0 ? videoFilters.join(',') : null;
   
   // If no splits, just trim
   if (splits.length === 0) {

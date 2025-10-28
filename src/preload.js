@@ -3,9 +3,10 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('api', {
   // Video selection
   selectVideo: () => ipcRenderer.invoke('select-video'),
+  selectMultipleVideos: () => ipcRenderer.invoke('select-multiple-videos'),
   
   // Subtitle generation
-  generateSubtitles: (videoPath) => ipcRenderer.invoke('generate-subtitles', videoPath),
+  generateSubtitles: (videoPath, language) => ipcRenderer.invoke('generate-subtitles', videoPath, language),
   
   // SRT operations
   saveSrt: (srtPath, srtContent) => ipcRenderer.invoke('save-srt', srtPath, srtContent),
@@ -16,7 +17,7 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('trim-video', videoPath, startTime, endTime, splits, audioVolume, aspectRatio),
   
   // Subtitle burn-in
-  burnSubtitles: (videoPath, srtPath) => ipcRenderer.invoke('burn-subtitles', videoPath, srtPath),
+  burnSubtitles: (videoPath, srtPath, subtitleStyle) => ipcRenderer.invoke('burn-subtitles', videoPath, srtPath, subtitleStyle),
   
   // Progress listeners
   onUploadProgress: (callback) => ipcRenderer.on('upload-progress', (event, progress) => callback(progress)),

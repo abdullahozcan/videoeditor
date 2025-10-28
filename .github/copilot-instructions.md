@@ -25,21 +25,40 @@ electron-ai-subtitler/
 1. Video file selection (mp4, mov, mkv, webm, avi)
 2. **Interactive timeline with playback controls**
 3. **Real audio waveform on timeline (Web Audio API)**
-4. **Video trimming with drag handles**
-5. **Video splitting at playback position**
-6. **Audio volume control (0-200%)**
-7. **Aspect ratio conversion (9:16, 16:9, 1:1, 4:5, 4:3)**
-8. **Live aspect ratio preview overlay on video player**
-9. **Export trimmed/edited video segments**
-10. AI-powered subtitle generation using OpenAI Whisper API
-11. SRT subtitle preview and editing
-12. Subtitle burn-in using ffmpeg-static
-13. Progress indicators for upload/transcription/encoding
-14. Soft subtitle export option (separate .srt file)
+4. **Thumbnail preview on timeline hover**
+5. **Video trimming with drag handles**
+6. **Video splitting at playback position**
+7. **Audio volume control (0-200%)**
+8. **Aspect ratio conversion (9:16, 16:9, 1:1, 4:5, 4:3)**
+9. **Live aspect ratio preview overlay on video player**
+11. **Export trimmed/edited video segments**
+12. AI-powered subtitle generation using OpenAI Whisper API (29+ languages)
+13. **Advanced subtitle editor with timestamp adjustment**
+14. **Auto-Sync subtitle timing** (offset, stretch/compress, two-point calibration)
+15. **AI subtitle enhancement (Gemini & DeepSeek)**
+    - Grammar and style improvement
+    - Translation to 10+ languages
+    - Summarization
+    - Tone adjustment (formal/casual)
+    - Punctuation correction
+16. **Custom subtitle styling (font, size, color, position)**
+17. SRT subtitle preview and editing
+18. Subtitle burn-in using ffmpeg-static with ASS format
+19. Progress indicators for upload/transcription/encoding
+20. Soft subtitle export option (separate .srt file)
+21. **Batch processing for multiple videos**
+22. **Video filters** (brightness, contrast, saturation)
+23. **Speed control** (0.25x to 4.0x)
+24. **Rotation and flip** options
+25. **Audio fade in/out** effects
+26. **Transitions between segments** (fade, wipe, slide)
+27. **Sticky video player** - Auto-sticks to bottom-right when scrolled out of view
 
 ## Environment Requirements
 - Node.js 18+
-- OPENAI_API_KEY environment variable
+- OPENAI_API_KEY environment variable (for Whisper transcription)
+- GEMINI_API_KEY (optional, for AI subtitle enhancement)
+- DEEPSEEK_API_KEY (optional, for AI subtitle enhancement)
 - ffmpeg-static (bundled) or system ffmpeg
 
 ## Development Commands
@@ -65,3 +84,9 @@ electron-ai-subtitler/
 - [x] Implement ffmpeg audio and video filters
 - [x] Add real audio waveform visualization on timeline (Web Audio API)
 - [x] Add aspect ratio preview overlay on video player
+- [x] Add video filters (brightness, contrast, saturation)
+- [x] Add speed control (0.25x to 4.0x)
+- [x] Add rotation and flip options
+- [x] Add audio fade in/out effects
+- [x] Add transitions between segments (fade, wipe, slide)
+- [x] Add sticky video player (auto-sticks when scrolled out of view)
