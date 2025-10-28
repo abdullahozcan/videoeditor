@@ -1,0 +1,13 @@
+node_modules/
+*.log
+dist/
+build/
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.avi
+*.srt
+/.vscode/
+.DS_Store
+.env
